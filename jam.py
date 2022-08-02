@@ -20,8 +20,7 @@ class Jam():
         self.REMOTEUser = credDict['remoteuser']
         self.REMOTEPwd = credDict['remotepwd']
         self.REMOTEPassword = credDict['remotepassword']
-        self.REMOTEFull = (self.REMOTEUser + '@' + self.REMOTEServer + ":" +
-            self.REMOTEPwd)
+        self.REMOTEFull = f'{self.REMOTEUser}@{self.REMOTEServer}:{self.REMOTEPwd}'
         self.dirstruct = self.get_dirstruct()
         self.get_current_dirstruct()
         self.sftp = self.get_sftp_client(self.REMOTEServer)
@@ -52,8 +51,7 @@ class Jam():
         transport = paramiko.Transport((self.REMOTEServer, self.REMOTEPort))
         transport.connect(username=self.REMOTEUser,
             password=self.REMOTEPassword)
-        sftp = paramiko.SFTPClient.from_transport(transport)
-        return sftp
+        return paramiko.SFTPClient.from_transport(transport)
 
     def put_file(self, local_path, remote_path):
         """Using ftp, put a file from local_path to remote_path"""
@@ -78,7 +76,6 @@ class Jam():
 
         Not yet functional
         """
-        dirstruct = {}
         excludeDirs = ['.git']
         i = 0
         for root, dirs, files in walk(self.HOSTPwd):
@@ -90,12 +87,12 @@ class Jam():
                 #else:
                     #dirstruct
         #print dirs
-        return dirstruct
+        return {}
 
     def get_head(self, file):
         """Return the first len(REMOTEFull) bytes of a file given the path"""
         chars =  repr(open(file, 'rb').read(len(self.REMOTEFull)))
-        return chars[1:len(chars)-1]
+        return chars[1:-1]
 
     def stash(self, local_file, remote_file):
         """Push the file from local to remote (full path)
@@ -109,8 +106,7 @@ class Jam():
             # The file has already been stashed
             return
         self.put_file(local_file, remote_file)
-        remote_full = (self.REMOTEUser + "@" + self.REMOTEServer + ":" +
-            remote_file)
+        remote_full = f"{self.REMOTEUser}@{self.REMOTEServer}:{remote_file}"
         open_local_file = open(local_file, "w")
         subprocess.Popen(['echo', str(remote_full)], stdout=open_local_file)
 

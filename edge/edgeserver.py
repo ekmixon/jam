@@ -36,7 +36,7 @@ def stream_content(filepath):
 @app.route('/anyurl')
 def parseUrl(someURL):
     if not isValid(someURL):
-        return LookupError(str(someURL) + " could not be found")
+        return LookupError(f"{str(someURL)} could not be found")
     if content_is_local(someURL):
         return get_content(someURL)
     else:
